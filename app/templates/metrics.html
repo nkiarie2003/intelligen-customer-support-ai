@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Model metrics{% endblock %}
+{% block content %}
+<div class="page-head"><div><span class="eyebrow">Evaluation</span><h1>Supervised classifier metrics</h1><p>Hold-out evaluation of the real-data complaint classifier.</p></div></div>
+{% if metrics %}
+<div class="stat-grid">
+  <div class="stat"><strong>{{ '%.1f'|format(metrics.accuracy*100) }}%</strong><span>Accuracy</span></div>
+  <div class="stat"><strong>{{ '%.1f'|format((metrics.get('macro_precision', 0))*100) }}%</strong><span>Macro precision</span></div>
+  <div class="stat"><strong>{{ '%.1f'|format((metrics.get('macro_recall', 0))*100) }}%</strong><span>Macro recall</span></div>
+  <div class="stat"><strong>{{ '%.1f'|format(metrics.macro_f1*100) }}%</strong><span>Macro F1</span></div>
+</div>
+<div class="split">
+  <section class="card"><h2>Evaluation design</h2><p>{{ metrics.note }}</p><dl class="detail-list"><dt>Dataset</dt><dd>{{ metrics.dataset }}</dd><dt>Rows</dt><dd>{{ metrics.dataset_rows }}</dd><dt>Train</dt><dd>{{ metrics.train_rows }}</dd><dt>Test</dt><dd>{{ metrics.test_rows }}</dd><dt>Classes</dt><dd>{{ metrics.classes|length }}</dd></dl></section>
+  <section class="card"><h2>Class distribution</h2>{% for label, count in metrics.class_distribution.items() %}<div class="bar-row"><div><span>{{ label|replace('_',' ')|title }}</span><strong>{{ count }}</strong></div></div>{% endfor %}</section>
+</div>
+<div class="card"><details><summary>Full evaluation JSON</summary><pre>{{ metrics | tojson(indent=2) }}</pre></details></div>
+{% else %}
+<div class="card"><p>No model metrics found. Prepare the real CFPB data, then run <code>python scripts/train_models.py</code> locally or <code>python scripts/train_on_azure_compute.py</code> on the Azure ML compute instance.</p></div>
+{% endif %}
+{% endblock %}

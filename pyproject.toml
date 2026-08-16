@@ -1,0 +1,31 @@
+[project]
+name = "intelligen-customer-intelligence-group2"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "transformers>=4.48,<6",
+    "sentence-transformers>=3.4,<6",
+    "torch>=2.5",
+    "accelerate>=1.0,<2",
+    "ipykernel>=7.3.0",
+    "notebook>=7.6.2",
+    "azure-ai-ml>=1.24,<2",
+    "azure-identity>=1.19,<2",
+    "kaggle>=1.7,<2",
+    "Flask>=3.1,<4",
+    "Flask-SQLAlchemy>=3.1,<4",
+    "Flask-Login>=0.6,<1",
+    "Flask-WTF>=1.2,<2",
+    "WTForms>=3.2,<4",
+    "python-dotenv>=1.0,<2",
+    "scikit-learn>=1.5,<2",
+    "joblib>=1.4,<2",
+    "numpy>=1.26,<3",
+    "pandas>=2.2,<4",
+    "nltk>=3.9,<4",
+    "requests>=2.32,<3",
+    "pathlib>=1.0.1",
+    "argparse>=1.4.0",
+]

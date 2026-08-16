@@ -1,0 +1,182 @@
+{
+  "dataset": "CFPB Consumer Complaint Database (Kaggle mirror; processed real data)",
+  "dataset_rows": 36189,
+  "train_rows": 28951,
+  "test_rows": 7238,
+  "accuracy": 0.8023,
+  "macro_precision": 0.7705,
+  "macro_recall": 0.7679,
+  "macro_f1": 0.769,
+  "weighted_f1": 0.8023,
+  "classes": [
+    "bank_account",
+    "credit_card",
+    "credit_reporting",
+    "debt_collection",
+    "loan",
+    "mortgage",
+    "other_financial_service",
+    "payments_transfers"
+  ],
+  "class_distribution": {
+    "bank_account": 5000,
+    "credit_card": 5000,
+    "credit_reporting": 5000,
+    "debt_collection": 5000,
+    "loan": 5000,
+    "mortgage": 5000,
+    "other_financial_service": 1189,
+    "payments_transfers": 5000
+  },
+  "classification_report": {
+    "bank_account": {
+      "precision": 0.7523277467411545,
+      "recall": 0.808,
+      "f1-score": 0.7791706846673095,
+      "support": 1000.0
+    },
+    "credit_card": {
+      "precision": 0.7947154471544715,
+      "recall": 0.782,
+      "f1-score": 0.7883064516129032,
+      "support": 1000.0
+    },
+    "credit_reporting": {
+      "precision": 0.8035190615835777,
+      "recall": 0.822,
+      "f1-score": 0.8126544735541276,
+      "support": 1000.0
+    },
+    "debt_collection": {
+      "precision": 0.7787698412698413,
+      "recall": 0.785,
+      "f1-score": 0.7818725099601593,
+      "support": 1000.0
+    },
+    "loan": {
+      "precision": 0.828774062816616,
+      "recall": 0.818,
+      "f1-score": 0.8233517866129844,
+      "support": 1000.0
+    },
+    "mortgage": {
+      "precision": 0.941717791411043,
+      "recall": 0.921,
+      "f1-score": 0.9312436804853387,
+      "support": 1000.0
+    },
+    "other_financial_service": {
+      "precision": 0.4646017699115044,
+      "recall": 0.4411764705882353,
+      "f1-score": 0.4525862068965517,
+      "support": 238.0
+    },
+    "payments_transfers": {
+      "precision": 0.7995824634655533,
+      "recall": 0.766,
+      "f1-score": 0.7824310520939735,
+      "support": 1000.0
+    },
+    "accuracy": 0.8022934512296215,
+    "macro avg": {
+      "precision": 0.7705010230442202,
+      "recall": 0.7678970588235294,
+      "f1-score": 0.7689521057354185,
+      "support": 7238.0
+    },
+    "weighted avg": {
+      "precision": 0.8027053931584962,
+      "recall": 0.8022934512296215,
+      "f1-score": 0.8022583802470538,
+      "support": 7238.0
+    }
+  },
+  "confusion_matrix": [
+    [
+      808,
+      43,
+      2,
+      9,
+      5,
+      7,
+      7,
+      119
+    ],
+    [
+      64,
+      782,
+      50,
+      23,
+      20,
+      1,
+      16,
+      44
+    ],
+    [
+      7,
+      35,
+      822,
+      78,
+      30,
+      11,
+      14,
+      3
+    ],
+    [
+      5,
+      36,
+      81,
+      785,
+      45,
+      11,
+      34,
+      3
+    ],
+    [
+      25,
+      30,
+      30,
+      51,
+      818,
+      15,
+      21,
+      10
+    ],
+    [
+      12,
+      3,
+      11,
+      15,
+      27,
+      921,
+      7,
+      4
+    ],
+    [
+      18,
+      10,
+      24,
+      40,
+      26,
+      6,
+      105,
+      9
+    ],
+    [
+      135,
+      45,
+      3,
+      7,
+      16,
+      6,
+      22,
+      766
+    ]
+  ],
+  "evaluation_design": {
+    "split": "stratified 80/20 hold-out",
+    "random_state": 42,
+    "model": "TF-IDF (1-2 grams) + balanced multinomial Logistic Regression"
+  },
+  "note": "Prototype evaluation on a processed sample of real CFPB complaint narratives. Kaggle/CFPB source limitations, category mapping, class imbalance and domain shift must be discussed before production use."
+}

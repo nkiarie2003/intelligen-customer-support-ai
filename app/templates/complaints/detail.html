@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Complaint analysis{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><span class="eyebrow">Case {{ complaint.public_id[:8] }}</span><h1>{{ complaint.subject }}</h1><p>{{ complaint.message }}</p></div>
+  <span class="pill {{ complaint.ai_priority }} large">{{ complaint.ai_priority|title }} priority</span>
+</div>
+
+<div class="analysis-grid">
+  <article class="card metric"><span>Classification</span><strong>{{ complaint.ai_category|replace('_',' ')|title }}</strong><small>{{ '%.1f'|format((complaint.ai_category_confidence or 0)*100) }}% model confidence</small></article>
+  <article class="card metric"><span>Sentiment</span><strong>{{ complaint.ai_sentiment|title }}</strong><small>score {{ complaint.ai_sentiment_score }}</small></article>
+  <article class="card metric"><span>Priority</span><strong>{{ complaint.ai_priority|title }}</strong><small>{{ complaint.ai_priority_score }}/100 transparent score</small></article>
+  <article class="card metric"><span>Human review</span><strong>{{ complaint.reply_status|title }}</strong><small>AI never sends automatically</small></article>
+</div>
+
+<div class="split">
+<section class="card">
+  <h2>Explainable AI</h2>
+  <p class="muted">Local positive feature contributions from the supervised classifier.</p>
+  <div class="cue-list">
+  {% for cue in (complaint.ai_explanation or {}).get('top_positive_cues', []) %}
+    <span>{{ cue.token }} <small>{{ cue.contribution }}</small></span>
+  {% else %}<p>No positive token contribution was available.</p>{% endfor %}
+  </div>
+  {% set redactions = (complaint.ai_explanation or {}).get('privacy_minimisation', []) %}
+  {% if redactions %}<h3>Privacy minimisation</h3><ul>{% for r in redactions %}<li>{{ r }}</li>{% endfor %}</ul>{% endif %}
+  <h3>Priority rationale</h3>
+  <ul>{% for r in (complaint.ai_explanation or {}).get('priority_reasons', []) %}<li>{{ r }}</li>{% endfor %}</ul>
+  <details><summary>AI backends</summary><pre>{{ complaint.ai_backends | tojson(indent=2) }}</pre></details>
+</section>
+<section class="card">
+  <h2>RAG evidence</h2>
+  <p class="muted">The response generator is grounded on these retrieved passages.</p>
+  {% for item in (complaint.ai_retrieval or {}).get('results', []) %}
+    <div class="evidence"><strong>{{ item.source }}</strong><span>relevance {{ item.score }}</span><p>{{ item.text }}</p></div>
+  {% else %}<p>No matching policy passage was retrieved.</p>{% endfor %}
+</section>
+</div>
+
+<section class="card response-card">
+  <div class="page-head compact"><div><span class="eyebrow">Generative AI / prompt engineering</span><h2>Suggested response</h2></div><span class="pill">{{ complaint.reply_status|title }}</span></div>
+  <blockquote>{{ complaint.ai_reply }}</blockquote>
+  {% if complaint.reply_status == 'approved' and complaint.human_reply %}
+    <h3>Human-approved response</h3><div class="approved-copy">{{ complaint.human_reply }}</div>
+  {% endif %}
+
+  {% if current_user.is_staff %}
+  <form method="post" action="{{ url_for('complaints.approve', public_id=complaint.public_id) }}">
+    {{ form.hidden_tag() }}
+    <label>{{ form.edited_reply.label }}{{ form.edited_reply(rows=7) }}</label>
+    <div class="actions">{{ form.submit(class_='button primary') }}</div>
+  </form>
+  <div class="actions danger-zone">
+    <form method="post" action="{{ url_for('complaints.reanalyze', public_id=complaint.public_id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="button">Re-analyse with current model</button></form>
+    <form method="post" action="{{ url_for('complaints.reject', public_id=complaint.public_id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="button danger">Reject AI draft</button></form>
+    <form method="post" action="{{ url_for('complaints.close', public_id=complaint.public_id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="button">Close case</button></form>
+  </div>
+  {% else %}
+    <p class="notice">The draft above is not an official response. A human support agent must approve or edit it.</p>
+  {% endif %}
+</section>
+{% endblock %}

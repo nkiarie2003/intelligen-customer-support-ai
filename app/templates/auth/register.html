@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Register{% endblock %}
+{% block content %}
+<div class="narrow card form-card">
+  <h1>Create customer account</h1>
+  <p class="muted">Public registration creates customer accounts only. Staff roles are created with the Flask CLI.</p>
+  <form method="post">
+    {{ form.hidden_tag() }}
+    <label>{{ form.username.label }}{{ form.username() }}</label>
+    <label>{{ form.password.label }}{{ form.password() }}</label>
+    <label>{{ form.confirm.label }}{{ form.confirm() }}</label>
+    {{ form.submit(class_='button primary full') }}
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Sign in{% endblock %}
+{% block content %}
+<div class="narrow card form-card">
+  <h1>Sign in</h1>
+  <form method="post">
+    {{ form.hidden_tag() }}
+    <label>{{ form.username.label }}{{ form.username() }}</label>
+    <label>{{ form.password.label }}{{ form.password() }}</label>
+    {{ form.submit(class_='button primary full') }}
+  </form>
+</div>
+{% endblock %}

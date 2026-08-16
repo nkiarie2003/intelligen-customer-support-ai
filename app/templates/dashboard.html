@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><span class="eyebrow">{{ current_user.role|title }} view</span><h1>Complaint dashboard</h1></div>
+  <a class="button primary" href="{{ url_for('complaints.new') }}">New complaint</a>
+</div>
+<div class="stat-grid">
+  <div class="stat"><strong>{{ counts.total }}</strong><span>Total</span></div>
+  <div class="stat"><strong>{{ counts.open }}</strong><span>Open</span></div>
+  <div class="stat"><strong>{{ counts.high }}</strong><span>High / critical</span></div>
+  <div class="stat"><strong>{{ counts.pending }}</strong><span>Awaiting review</span></div>
+</div>
+<div class="card table-card">
+<table>
+  <thead><tr><th>Subject</th><th>Category</th><th>Sentiment</th><th>Priority</th><th>AI reply</th><th>Status</th></tr></thead>
+  <tbody>
+  {% for c in complaints %}
+    <tr>
+      <td><a href="{{ url_for('complaints.detail', public_id=c.public_id) }}">{{ c.subject }}</a><small>{{ c.created_at.strftime('%d %b %Y %H:%M') }}</small></td>
+      <td>{{ (c.ai_category or '—')|replace('_',' ')|title }}</td>
+      <td>{{ (c.ai_sentiment or '—')|title }}</td>
+      <td><span class="pill {{ c.ai_priority }}">{{ (c.ai_priority or '—')|title }}</span></td>
+      <td>{{ c.reply_status|title }}</td>
+      <td>{{ c.status|title }}</td>
+    </tr>
+  {% else %}
+    <tr><td colspan="6" class="empty">No complaints yet.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endblock %}

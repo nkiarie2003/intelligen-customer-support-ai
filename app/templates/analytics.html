@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Business analytics{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><span class="eyebrow">Decision support</span><h1>Complaint intelligence analytics</h1><p>Operational patterns from cases held in this prototype database.</p></div>
+</div>
+<div class="stat-grid">
+  <div class="stat"><strong>{{ stats.total }}</strong><span>Total cases</span></div>
+  <div class="stat"><strong>{{ stats.approved }}</strong><span>Human-approved replies</span></div>
+  <div class="stat"><strong>{{ stats.closed }}</strong><span>Closed cases</span></div>
+  <div class="stat"><strong>{{ stats.critical }}</strong><span>Critical priority</span></div>
+</div>
+<div class="analysis-grid three-col">
+  <section class="card"><h2>Categories</h2>{% for item in categories %}<div class="bar-row"><div><span>{{ item.label }}</span><strong>{{ item.count }}</strong></div><div class="bar"><i style="width: {{ item.pct }}%"></i></div><small>{{ item.pct }}%</small></div>{% else %}<p>No data.</p>{% endfor %}</section>
+  <section class="card"><h2>Sentiment</h2>{% for item in sentiments %}<div class="bar-row"><div><span>{{ item.label }}</span><strong>{{ item.count }}</strong></div><div class="bar"><i style="width: {{ item.pct }}%"></i></div><small>{{ item.pct }}%</small></div>{% else %}<p>No data.</p>{% endfor %}</section>
+  <section class="card"><h2>Priority</h2>{% for item in priorities %}<div class="bar-row"><div><span>{{ item.label }}</span><strong>{{ item.count }}</strong></div><div class="bar"><i style="width: {{ item.pct }}%"></i></div><small>{{ item.pct }}%</small></div>{% else %}<p>No data.</p>{% endfor %}</section>
+</div>
+<div class="card notice-card"><h2>Business interpretation</h2><p>These summaries help support managers identify recurring complaint types, negative-sentiment concentration and high-priority workload. They are decision-support indicators only and should not be treated as evidence of customer fault, legal liability or guaranteed service outcomes.</p></div>
+{% endblock %}

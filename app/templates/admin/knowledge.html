@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}RAG knowledge base{% endblock %}
+{% block content %}
+<div class="page-head"><div><span class="eyebrow">Administrator</span><h1>RAG knowledge base</h1></div></div>
+<div class="split">
+  <section class="card form-card">
+    <h2>Add policy</h2>
+    <form method="post">{{ form.hidden_tag() }}
+      <label>{{ form.title.label }}{{ form.title() }}</label>
+      <label>{{ form.content.label }}{{ form.content(rows=12) }}</label>
+      <label class="checkbox">{{ form.active() }} {{ form.active.label.text }}</label>
+      {{ form.submit(class_='button primary') }}
+    </form>
+  </section>
+  <section class="card"><h2>Database documents</h2>
+    {% for d in docs %}<div class="evidence"><strong>{{ d.title }}</strong><span>{{ 'Active' if d.active else 'Inactive' }}</span><p>{{ d.content[:260] }}{% if d.content|length > 260 %}…{% endif %}</p><form method="post" action="{{ url_for('admin.toggle_knowledge', doc_id=d.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="button small">Toggle active</button></form></div>{% else %}<p>No custom documents yet. The bundled policy file is still used.</p>{% endfor %}
+  </section>
+</div>
+{% endblock %}

@@ -1,0 +1,13 @@
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.env
+instance/
+artifacts/*.joblib
+.pytest_cache/
+.vscode/
+.DS_Store
+data/raw/
+data/processed/*.csv
+data/processed/*.json

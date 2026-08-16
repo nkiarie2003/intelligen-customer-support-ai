@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}New complaint{% endblock %}
+{% block content %}
+<div class="page-head"><div><span class="eyebrow">AI analysis</span><h1>Submit a customer message</h1></div></div>
+<div class="split">
+  <div class="card form-card">
+    <form method="post">
+      {{ form.hidden_tag() }}
+      <label>{{ form.subject.label }}{{ form.subject(placeholder='e.g. Charged twice for my subscription') }}</label>
+      <label>{{ form.message.label }}{{ form.message(rows=12, placeholder='Describe the customer issue in natural language...') }}</label>
+      <p class="muted">Do not include passwords, full payment-card numbers, health information or unnecessary personal data.</p>
+      {{ form.submit(class_='button primary') }}
+    </form>
+  </div>
+  <aside class="card">
+    <h3>What the system will do</h3>
+    <ul class="clean-list">
+      <li>Predict the complaint category and confidence.</li>
+      <li>Estimate sentiment and priority.</li>
+      <li>Show features that influenced the supervised model.</li>
+      <li>Retrieve relevant policy passages.</li>
+      <li>Create a draft response for human review.</li>
+    </ul>
+  </aside>
+</div>
+{% endblock %}

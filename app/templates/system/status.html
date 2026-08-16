@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}System & model status{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><span class="eyebrow">Architecture observability</span><h1>System & model status</h1><p>What is enabled, where the model was trained, and how the live application performs inference.</p></div>
+  <span class="pill large">{{ inference_mode|replace('_',' ')|title }} inference</span>
+</div>
+
+<div class="split">
+<section class="card">
+  <h2>AI components</h2>
+  <div class="component-list">
+  {% for c in components %}
+    <div class="component-row">
+      <span class="status-dot {{ 'on' if c.enabled else 'off' }}"></span>
+      <div><strong>{{ c.name }}</strong><p>{{ c.detail }}</p></div>
+      <span class="pill">{{ 'Enabled' if c.enabled else 'Disabled' }}</span>
+    </div>
+  {% endfor %}
+  </div>
+</section>
+<section class="card">
+  <h2>Training provenance</h2>
+  {% if provenance.available %}
+    <dl class="detail-list">
+      <dt>Platform</dt><dd>{{ provenance.training_platform|replace('_',' ')|title }}</dd>
+      <dt>Trained</dt><dd>{{ provenance.trained_at_utc }}</dd>
+      <dt>Host</dt><dd>{{ provenance.hostname }}</dd>
+      <dt>Python</dt><dd>{{ provenance.python_version }}</dd>
+      <dt>scikit-learn</dt><dd>{{ provenance.scikit_learn_version }}</dd>
+      <dt>Dataset rows</dt><dd>{{ provenance.dataset_rows }}</dd>
+      <dt>Azure workspace</dt><dd>{{ provenance.azure.workspace or '—' }}</dd>
+      <dt>Azure compute</dt><dd>{{ provenance.azure.compute or '—' }}</dd>
+    </dl>
+  {% else %}
+    <p>{{ provenance.message }}</p>
+    <p class="muted">Train locally with <code>python scripts/train_models.py</code> or on the existing Azure ML compute instance with <code>python scripts/train_on_azure_compute.py</code>.</p>
+  {% endif %}
+</section>
+</div>
+
+<section class="card">
+  <h2>Cloud architecture used for SHU</h2>
+  <div class="architecture-flow">
+    <span>CFPB real dataset</span><b>→</b><span>Azure ML compute instance</span><b>→</b><span>Train & evaluate</span><b>→</b><span>Joblib model + provenance</span><b>→</b><span>Local Flask inference</span><b>→</b><span>Human review</span>
+  </div>
+  <p class="muted">The optional production endpoint files are retained separately for architectural discussion, but they are not required by the live SHU-compatible application.</p>
+</section>
+
+{% if metrics %}
+<section class="card">
+  <h2>Current model snapshot</h2>
+  <div class="stat-grid compact-stats">
+    <div class="stat"><strong>{{ '%.1f'|format(metrics.accuracy * 100) }}%</strong><span>Accuracy</span></div>
+    <div class="stat"><strong>{{ '%.1f'|format(metrics.macro_precision * 100) }}%</strong><span>Macro precision</span></div>
+    <div class="stat"><strong>{{ '%.1f'|format(metrics.macro_recall * 100) }}%</strong><span>Macro recall</span></div>
+    <div class="stat"><strong>{{ '%.1f'|format(metrics.macro_f1 * 100) }}%</strong><span>Macro F1</span></div>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

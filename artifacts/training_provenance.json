@@ -1,0 +1,28 @@
+{
+  "training_platform": "local",
+  "trained_at_utc": "2026-08-16T16:50:34.295261+00:00",
+  "hostname": "DESKTOP-80OBESJ",
+  "operating_system": "Windows-11-10.0.26200-SP0",
+  "python_version": "3.13.14",
+  "scikit_learn_version": "1.9.0",
+  "dataset_path": "C:\\Users\\user\\Desktop\\IntelliGen_Customer_Intelligence_group2\\data\\processed\\cfpb_complaints.csv",
+  "dataset_rows": 36189,
+  "classes": [
+    "bank_account",
+    "credit_card",
+    "credit_reporting",
+    "debt_collection",
+    "loan",
+    "mortgage",
+    "other_financial_service",
+    "payments_transfers"
+  ],
+  "azure": {
+    "subscription": "8fc122ca-79a2-4628-9c9a-69278b28526d",
+    "resource_group": "dtl-2526-55-710266-bf-AITraining-890311",
+    "workspace": "mlworkspace-traning",
+    "compute": "c50411741-ML"
+  },
+  "architecture": "cloud-training/local-inference",
+  "note": "When training_platform is azure_ml_compute_instance, the script was run interactively on an existing Azure ML compute instance. Flask inference remains local."
+}
