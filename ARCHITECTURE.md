@@ -1,4 +1,4 @@
-# Architecture — SHU-Compatible IntelliGen Customer Intelligence Platform
+# Architecture — IntelliGen Customer Intelligence Platform
 
 ## Runtime architecture
 
@@ -37,30 +37,7 @@ Customer / Support Agent
        Audit trail
 ```
 
-## Cloud model-development architecture
 
-```text
-Real CFPB Kaggle dataset
-          |
-          v
-Existing Azure ML compute instance (interactive terminal / VS Code remote)
-          |
-          v
-scripts/train_on_azure_compute.py
-          |
-          +--> model evaluation
-          +--> complaint_classifier.joblib
-          +--> metrics.json
-          +--> training_provenance.json
-          |
-          v
-Artifacts copied/downloaded to local project
-          |
-          v
-Flask serves local real-time inference
-```
-
-This architecture intentionally avoids requiring Azure ML `onlineEndpoints` or Azure ML `jobs` resources. Optional endpoint files are retained in `azure_optional_endpoint/` for production-architecture discussion only.
 
 ## Why the hybrid design is academically useful
 
