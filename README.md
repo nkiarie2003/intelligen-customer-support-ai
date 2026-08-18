@@ -13,21 +13,7 @@ A full Flask MSc demonstration application for the IntelliGen interview scenario
 7. **Cloud AI/ML** — model training and experimentation can run interactively on an existing Azure ML compute instance; the resulting model is served locally by Flask.
 8. **Advanced element: RAG** — policy evidence is retrieved before a response is drafted; Twitter conversations are used only for style/examples, never as policy authority.
 
-## SHU-compatible architecture
 
-The current university Azure lab permits the existing Azure ML workspace/compute instance but can deny creation of additional resource types such as managed online endpoints or Azure ML jobs. This project therefore defaults to:
-
-```text
-Azure ML compute instance -> cloud model training/evaluation -> model artifact
-                                                      |
-                                                      v
-                                              Local Flask app
-                                                      |
-                                                      v
-                                             real-time inference
-```
-
-This is a deliberate architecture, not a fallback hidden from the user. `artifacts/training_provenance.json` records where the model was trained, and the web app exposes that information to **administrators only** on **System status**.
 
 ## Data
 
@@ -161,7 +147,6 @@ The correct SQLite configuration is:
 DATABASE_URL=sqlite:///customer_intelligence.db
 ```
 
-Do **not** use `sqlite:///instance/customer_intelligence.db`; Flask-SQLAlchemy already resolves the relative SQLite file inside Flask's instance directory.
 
 ## Download and prepare Kaggle data
 
@@ -204,26 +189,6 @@ artifacts/complaint_classifier.joblib
 artifacts/metrics.json
 artifacts/training_provenance.json
 ```
-
-## Train on the existing Azure ML compute instance
-
-Connect VS Code / Azure ML Studio to the existing compute instance, upload or clone this project, and ensure the processed CFPB CSV is present.
-
-On the Linux compute terminal:
-
-```bash
-bash azure_compute/setup_compute.sh
-python azure_compute/verify_compute.py
-bash azure_compute/train_on_compute.sh
-```
-
-Then optionally package the three model files for downloading:
-
-```bash
-bash azure_compute/package_artifacts.sh
-```
-
-Copy the resulting model/metrics/provenance files back into the local `artifacts/` folder. The Flask app will then report the Azure training provenance on `/system/status`.
 
 ## Advanced AI features
 
@@ -324,10 +289,6 @@ These controls support discussion of UK GDPR principles such as data minimisatio
 ## Environmental discussion
 
 The baseline TF-IDF + Logistic Regression model is deliberately retained because it is lightweight, measurable and explainable. Transformer features are optional so you can compare the possible performance/semantic benefits against greater memory, compute and energy use.
-
-## Optional production Azure endpoint
-
-`azure_optional_endpoint/` contains the previous managed-online-endpoint design for architectural discussion. It is not imported by the default Flask runtime. In a commercial Azure environment where the required resource types are permitted, that layer could be reviewed, secured and re-enabled.
 
 ## Verification
 
