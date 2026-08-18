@@ -1,15 +1,8 @@
 {% extends "base.html" %}
-{% block title %}Register{% endblock %}
+{% block title %}Create account{% endblock %}
 {% block content %}
-<div class="narrow card form-card">
-  <h1>Create customer account</h1>
-  <p class="muted">Public registration creates customer accounts only. Staff roles are created with the Flask CLI.</p>
-  <form method="post">
-    {{ form.hidden_tag() }}
-    <label>{{ form.username.label }}{{ form.username() }}</label>
-    <label>{{ form.password.label }}{{ form.password() }}</label>
-    <label>{{ form.confirm.label }}{{ form.confirm() }}</label>
-    {{ form.submit(class_='button primary full') }}
-  </form>
+<div class="auth-shell">
+  <section class="auth-intro"><span class="eyebrow">Customer account</span><h1>Create your support account</h1><p>Use your account to submit complaints, follow progress and read approved responses.</p><div class="auth-trust"><strong>Customer access only</strong><span>Staff and administrator roles are created separately and are not available through public registration.</span></div></section>
+  <section class="card form-card auth-card"><h2>Create account</h2><form method="post" novalidate>{{ form.hidden_tag() }}<label>{{ form.username.label }}{{ form.username(autocomplete='username') }}{% for e in form.username.errors %}<small class="field-error">{{ e }}</small>{% endfor %}</label><label>{{ form.password.label }}<span class="field-hint">Use at least 8 characters.</span>{{ form.password(autocomplete='new-password') }}{% for e in form.password.errors %}<small class="field-error">{{ e }}</small>{% endfor %}</label><label>{{ form.confirm.label }}{{ form.confirm(autocomplete='new-password') }}{% for e in form.confirm.errors %}<small class="field-error">{{ e }}</small>{% endfor %}</label>{{ form.submit(class_='button primary full') }}</form><p class="auth-switch">Already registered? <a href="{{ url_for('auth.login') }}">Sign in</a></p></section>
 </div>
 {% endblock %}

@@ -7,7 +7,7 @@ from .ai.safety import minimise_sensitive_text
 from .extensions import db
 from .forms import ComplaintForm, ReviewForm
 from .models import Complaint, KnowledgeDocument
-from .utils import audit, staff_required
+from .utils import admin_required, audit, staff_required
 
 bp = Blueprint("complaints", __name__, url_prefix="/complaints")
 
@@ -65,11 +65,11 @@ def new():
         db.session.commit()
         if privacy_warnings:
             flash(
-                "Complaint submitted. Potentially sensitive values were redacted before storage and AI processing.",
+                "Complaint submitted. Potentially sensitive values were removed before the complaint was stored.",
                 "success",
             )
         else:
-            flash("Complaint submitted and analysed. AI response is awaiting human review.", "success")
+            flash("Complaint submitted. A support team member will review it and an approved response will appear in your case.", "success")
         return redirect(url_for("complaints.detail", public_id=complaint.public_id))
     return render_template("complaints/new.html", form=form)
 
@@ -86,7 +86,7 @@ def detail(public_id):
 
 @bp.route("/<public_id>/reanalyze", methods=["POST"])
 @login_required
-@staff_required
+@admin_required
 def reanalyze(public_id):
     complaint = Complaint.query.filter_by(public_id=public_id).first_or_404()
     result = get_ai_engine().analyze(complaint.subject, complaint.message, _active_docs())

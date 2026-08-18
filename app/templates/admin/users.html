@@ -1,3 +1,6 @@
-{% extends "base.html" %}{% block title %}Users{% endblock %}{% block content %}
-<h1>Users</h1><div class="card table-card"><table><thead><tr><th>Username</th><th>Role</th><th>Created</th></tr></thead><tbody>{% for u in users %}<tr><td>{{ u.username }}</td><td>{{ u.role }}</td><td>{{ u.created_at }}</td></tr>{% endfor %}</tbody></table></div>
+{% extends "base.html" %}
+{% block title %}User management{% endblock %}
+{% block content %}
+<div class="page-head"><div><span class="eyebrow">Administrator · Access control</span><h1>User management</h1><p>Review registered accounts and verify that staff privileges are limited to the appropriate roles.</p></div></div>
+<div class="card table-card"><table><thead><tr><th>Username</th><th>Role</th><th>Created</th><th>Access level</th></tr></thead><tbody>{% for u in users %}<tr><td><strong>{{ u.username }}</strong></td><td><span class="role-badge {{ u.role }}">{{ u.role|title }}</span></td><td>{{ u.created_at.strftime('%d %b %Y %H:%M') }}</td><td>{% if u.role == 'admin' %}Full administrative and AI governance access{% elif u.role == 'agent' %}Complaint review and response workflow{% else %}Own complaints and approved responses only{% endif %}</td></tr>{% else %}<tr><td colspan="4" class="empty">No users found.</td></tr>{% endfor %}</tbody></table></div>
 {% endblock %}

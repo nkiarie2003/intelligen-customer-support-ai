@@ -1,26 +1,27 @@
 {% extends "base.html" %}
-{% block title %}New complaint{% endblock %}
+{% block title %}Submit a complaint{% endblock %}
 {% block content %}
-<div class="page-head"><div><span class="eyebrow">AI analysis</span><h1>Submit a customer message</h1></div></div>
-<div class="split">
-  <div class="card form-card">
-    <form method="post">
+<div class="page-head customer-head">
+  <div><span class="eyebrow">Customer support</span><h1>Tell us what happened</h1><p>Give us a clear description of the problem. You can return to your dashboard at any time to follow the case.</p></div>
+</div>
+<div class="split complaint-submit-layout">
+  <section class="card form-card complaint-form-card">
+    <form method="post" novalidate>
       {{ form.hidden_tag() }}
-      <label>{{ form.subject.label }}{{ form.subject(placeholder='e.g. Charged twice for my subscription') }}</label>
-      <label>{{ form.message.label }}{{ form.message(rows=12, placeholder='Describe the customer issue in natural language...') }}</label>
-      <p class="muted">Do not include passwords, full payment-card numbers, health information or unnecessary personal data.</p>
-      {{ form.submit(class_='button primary') }}
+      <label>{{ form.subject.label }}<span class="field-hint">Use a short description of the main issue.</span>{{ form.subject(placeholder='e.g. Unauthorised card transaction') }}{% for e in form.subject.errors %}<small class="field-error">{{ e }}</small>{% endfor %}</label>
+      <label>{{ form.message.label }}<span class="field-hint">Explain what happened, when you noticed it, and what help you need.</span>{{ form.message(rows=12, placeholder='Describe the issue in your own words...') }}{% for e in form.message.errors %}<small class="field-error">{{ e }}</small>{% endfor %}</label>
+      <div class="privacy-note"><strong>Protect your information</strong><p>Do not include passwords, PINs, one-time codes, full payment-card numbers, health information or other unnecessary sensitive data.</p></div>
+      {{ form.submit(class_='button primary large-action') }}
     </form>
-  </div>
-  <aside class="card">
-    <h3>What the system will do</h3>
-    <ul class="clean-list">
-      <li>Predict the complaint category and confidence.</li>
-      <li>Estimate sentiment and priority.</li>
-      <li>Show features that influenced the supervised model.</li>
-      <li>Retrieve relevant policy passages.</li>
-      <li>Create a draft response for human review.</li>
-    </ul>
+  </section>
+  <aside class="card next-steps-card">
+    <span class="eyebrow">What happens next</span>
+    <ol class="numbered-steps">
+      <li><span>1</span><div><strong>Complaint received</strong><p>You receive a case reference immediately.</p></div></li>
+      <li><span>2</span><div><strong>Support review</strong><p>A support team member reviews the issue and prepares a response.</p></div></li>
+      <li><span>3</span><div><strong>Response available</strong><p>Your official reply appears in the case after human approval.</p></div></li>
+      <li><span>4</span><div><strong>Case completed</strong><p>The case can be closed once the support process is complete.</p></div></li>
+    </ol>
   </aside>
 </div>
 {% endblock %}

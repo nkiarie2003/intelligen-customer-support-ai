@@ -3,12 +3,14 @@ from flask import Blueprint, current_app, render_template
 from flask_login import login_required
 
 from .ai.provenance import load_training_provenance
+from .utils import admin_required
 
 bp = Blueprint("system_status", __name__, url_prefix="/system")
 
 
 @bp.route("/status")
 @login_required
+@admin_required
 def status():
     artifacts = current_app.config["ARTIFACT_DIR"]
     metrics_path = artifacts / "metrics.json"

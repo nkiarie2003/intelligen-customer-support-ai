@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Model metrics{% endblock %}
 {% block content %}
-<div class="page-head"><div><span class="eyebrow">Evaluation</span><h1>Supervised classifier metrics</h1><p>Hold-out evaluation of the real-data complaint classifier.</p></div></div>
+<div class="page-head"><div><span class="eyebrow">Administrator · Model governance</span><h1>Supervised classifier metrics</h1><p>Hold-out evaluation of the real-data complaint classifier.</p></div></div>
 {% if metrics %}
 <div class="stat-grid">
   <div class="stat"><strong>{{ '%.1f'|format(metrics.accuracy*100) }}%</strong><span>Accuracy</span></div>

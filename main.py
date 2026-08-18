@@ -1,5 +1,5 @@
 def main():
-    print("Hello from intelligen-customer-intelligence-group2!")
+    print("Hello from customer-intelligence-platform-shu-customer-group2!")
 
 
 if __name__ == "__main__":

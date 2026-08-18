@@ -1,11 +1,11 @@
 {
   "training_platform": "local",
-  "trained_at_utc": "2026-08-16T16:50:34.295261+00:00",
+  "trained_at_utc": "2026-08-18T17:48:29.599010+00:00",
   "hostname": "DESKTOP-80OBESJ",
   "operating_system": "Windows-11-10.0.26200-SP0",
   "python_version": "3.13.14",
   "scikit_learn_version": "1.9.0",
-  "dataset_path": "C:\\Users\\user\\Desktop\\IntelliGen_Customer_Intelligence_group2\\data\\processed\\cfpb_complaints.csv",
+  "dataset_path": "C:\\Users\\user\\Desktop\\Customer_Intelligence_Platform_SHU_Customer_Group2\\data\\processed\\cfpb_complaints.csv",
   "dataset_rows": 36189,
   "classes": [
     "bank_account",

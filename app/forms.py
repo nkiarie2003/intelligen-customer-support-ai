@@ -18,8 +18,8 @@ class RegisterForm(FlaskForm):
 
 class ComplaintForm(FlaskForm):
     subject = StringField("Subject", validators=[DataRequired(), Length(min=4, max=160)])
-    message = TextAreaField("Complaint or support message", validators=[DataRequired(), Length(min=15, max=5000)])
-    submit = SubmitField("Analyse and submit")
+    message = TextAreaField("Complaint details", validators=[DataRequired(), Length(min=15, max=5000)])
+    submit = SubmitField("Submit complaint")
 
 
 class ReviewForm(FlaskForm):

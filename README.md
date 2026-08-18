@@ -27,7 +27,7 @@ Azure ML compute instance -> cloud model training/evaluation -> model artifact
                                              real-time inference
 ```
 
-This is a deliberate architecture, not a fallback hidden from the user. `artifacts/training_provenance.json` records where the model was trained, and the web app exposes that information on **System status**.
+This is a deliberate architecture, not a fallback hidden from the user. `artifacts/training_provenance.json` records where the model was trained, and the web app exposes that information to **administrators only** on **System status**.
 
 ## Data
 
@@ -244,6 +244,16 @@ ENABLE_LOCAL_GENERATOR=true
 
 These are intentionally optional because transformer models require more memory, disk space and computation than the baseline.
 
+## Role-based navigation and access
+
+The web interface follows least-privilege role separation:
+
+- **Customer:** Dashboard, New complaint, own complaint records, sign out.
+- **Agent:** Customer-facing operational views plus **Analytics** and case-review actions.
+- **Admin:** Agent capabilities plus **Model metrics**, **System status**, **Users**, **Knowledge**, and **Audit**.
+
+Model metrics and system/training status are protected on the server with `admin_required`; hiding the navbar links is not the security control by itself. Customers and agents receive HTTP 403 if they manually request those administrator routes.
+
 ## Create administrator / agent accounts
 
 ```bash
@@ -286,7 +296,8 @@ http://127.0.0.1:5000
 - human approve/edit/reject workflow
 - staff re-analysis after model updates
 - complaint analytics dashboard
-- model metrics dashboard
+- administrator-only model metrics dashboard
+- administrator-only system/model status and training provenance
 - model/cloud training provenance dashboard
 - knowledge-base management
 - audit log
@@ -345,3 +356,13 @@ This implementation supports discussion of:
 - legal/privacy risk;
 - environmental cost of increasingly large models;
 - limitations of code-generation tools and the need for review/testing.
+
+## Role-specific interface and information boundaries
+
+The current SHU build deliberately separates customer support information from AI/model diagnostics.
+
+- **Customer:** submit complaints, see own cases, follow simple progress and read only human-approved responses.
+- **Support agent:** access the case queue, review complaint text and prepare/approve/reject customer responses. Model diagnostics are not exposed.
+- **Administrator:** access complaint intelligence, analytics, model metrics, system status, users, RAG knowledge and audit records.
+
+The administrator-only complaint intelligence route contains classification confidence, sentiment score, priority rationale, XAI cues, RAG evidence and backend diagnostics. Customers and agents receive HTTP 403 if they attempt to open that route directly.

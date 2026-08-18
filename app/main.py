@@ -1,10 +1,10 @@
 import json
 from collections import Counter
-from flask import Blueprint, current_app, render_template
+from flask import Blueprint, current_app, render_template, request
 from flask_login import current_user, login_required
 
 from .models import Complaint
-from .utils import staff_required
+from .utils import admin_required
 
 bp = Blueprint("main", __name__)
 
@@ -20,20 +20,45 @@ def dashboard():
     query = Complaint.query
     if not current_user.is_staff:
         query = query.filter_by(user_id=current_user.id)
-    complaints = query.order_by(Complaint.created_at.desc()).all()
+    all_complaints = query.order_by(Complaint.created_at.desc()).all()
+
+    q = (request.args.get("q") or "").strip().lower()
+    status_filter = (request.args.get("status") or "all").strip().lower()
+    complaints = all_complaints
+    if q:
+        complaints = [
+            c for c in complaints
+            if q in c.subject.lower()
+            or q in c.public_id.lower()
+            or (c.customer and q in c.customer.username.lower())
+        ]
+    if status_filter != "all":
+        if status_filter == "response_available":
+            complaints = [c for c in complaints if c.reply_status == "approved"]
+        elif status_filter == "awaiting_review":
+            complaints = [c for c in complaints if c.reply_status in {"pending", "rejected"} and c.status != "closed"]
+        else:
+            complaints = [c for c in complaints if c.status == status_filter]
 
     counts = {
-        "total": len(complaints),
-        "open": sum(c.status == "open" for c in complaints),
-        "high": sum(c.ai_priority in {"high", "critical"} for c in complaints),
-        "pending": sum(c.reply_status == "pending" for c in complaints),
+        "total": len(all_complaints),
+        "open": sum(c.status == "open" for c in all_complaints),
+        "closed": sum(c.status == "closed" for c in all_complaints),
+        "pending": sum(c.reply_status in {"pending", "rejected"} and c.status != "closed" for c in all_complaints),
+        "responses": sum(c.reply_status == "approved" for c in all_complaints),
+        "high": sum(c.ai_priority in {"high", "critical"} for c in all_complaints),
     }
-    return render_template("dashboard.html", complaints=complaints, counts=counts)
+    return render_template(
+        "dashboard.html",
+        complaints=complaints,
+        counts=counts,
+        filters={"q": q, "status": status_filter},
+    )
 
 
 @bp.route("/analytics")
 @login_required
-@staff_required
+@admin_required
 def analytics():
     complaints = Complaint.query.order_by(Complaint.created_at.desc()).all()
     total = max(len(complaints), 1)
@@ -66,6 +91,7 @@ def analytics():
 
 @bp.route("/model-metrics")
 @login_required
+@admin_required
 def model_metrics():
     path = current_app.config["ARTIFACT_DIR"] / "metrics.json"
     metrics = json.loads(path.read_text(encoding="utf-8")) if path.exists() else None

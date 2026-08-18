@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Complaint intelligence {{ complaint.public_id[:8]|upper }}{% endblock %}
+{% block content %}
+<div class="case-header admin-analysis-head">
+  <div><a class="back-link" href="{{ url_for('complaints.detail', public_id=complaint.public_id) }}">← Back to case</a><span class="eyebrow">Administrator · Restricted AI analysis</span><h1>Complaint intelligence</h1><p>Case {{ complaint.public_id[:8]|upper }} · {{ complaint.subject }}</p></div>
+  <span class="role-badge admin">Admin only</span>
+</div>
+<div class="security-banner"><strong>Restricted technical information</strong><span>This page contains model outputs, explanations, retrieval evidence and backend details. It is intentionally unavailable to customers and support agents.</span></div>
+
+<div class="analysis-grid">
+  <article class="card metric"><span>Classification</span><strong>{{ (complaint.ai_category or 'Unavailable')|replace('_',' ')|title }}</strong><small>{{ '%.1f'|format((complaint.ai_category_confidence or 0)*100) }}% model confidence</small></article>
+  <article class="card metric"><span>Sentiment</span><strong>{{ (complaint.ai_sentiment or 'Unavailable')|title }}</strong><small>score {{ complaint.ai_sentiment_score if complaint.ai_sentiment_score is not none else '—' }}</small></article>
+  <article class="card metric"><span>Priority</span><strong>{{ (complaint.ai_priority or 'Unavailable')|title }}</strong><small>{{ complaint.ai_priority_score if complaint.ai_priority_score is not none else '—' }}/100</small></article>
+  <article class="card metric"><span>Human review</span><strong>{{ complaint.reply_status|replace('_',' ')|title }}</strong><small>Customer receives only approved output</small></article>
+</div>
+
+<div class="split">
+<section class="card">
+  <div class="section-heading"><div><span class="eyebrow">Explainable AI</span><h2>Prediction evidence</h2></div></div>
+  <p class="muted">Positive local feature contributions from the supervised complaint classifier.</p>
+  <div class="cue-list">
+  {% for cue in (complaint.ai_explanation or {}).get('top_positive_cues', []) %}<span>{{ cue.token }} <small>{{ cue.contribution }}</small></span>{% else %}<p>No positive token contribution was available.</p>{% endfor %}
+  </div>
+  {% set redactions = (complaint.ai_explanation or {}).get('privacy_minimisation', []) %}
+  {% if redactions %}<h3>Privacy minimisation</h3><ul>{% for r in redactions %}<li>{{ r }}</li>{% endfor %}</ul>{% endif %}
+  <h3>Priority rationale</h3><ul>{% for r in (complaint.ai_explanation or {}).get('priority_reasons', []) %}<li>{{ r }}</li>{% else %}<li>No priority rationale available.</li>{% endfor %}</ul>
+</section>
+<section class="card">
+  <div class="section-heading"><div><span class="eyebrow">RAG</span><h2>Retrieved policy evidence</h2></div></div>
+  <p class="muted">Passages retrieved to ground the internal draft response.</p>
+  {% for item in (complaint.ai_retrieval or {}).get('results', []) %}<div class="evidence"><strong>{{ item.source }}</strong><span>Relevance {{ item.score }}</span><p>{{ item.text }}</p></div>{% else %}<p>No matching policy passage was retrieved.</p>{% endfor %}
+</section>
+</div>
+
+<div class="split">
+<section class="card">
+  <div class="section-heading"><div><span class="eyebrow">Generated support material</span><h2>Internal AI draft</h2></div></div>
+  <div class="draft-copy">{{ complaint.ai_reply or 'No AI draft is available.' }}</div>
+  {% if complaint.human_reply %}<h3>Human-approved version</h3><div class="approved-copy">{{ complaint.human_reply }}</div>{% endif %}
+</section>
+<section class="card">
+  <div class="section-heading"><div><span class="eyebrow">Technical diagnostics</span><h2>AI backends</h2></div></div>
+  <pre>{{ (complaint.ai_backends or {}) | tojson(indent=2) }}</pre>
+</section>
+</div>
+{% endblock %}

@@ -1,31 +1,105 @@
 {% extends "base.html" %}
-{% block title %}Dashboard{% endblock %}
+{% block title %}{% if current_user.role == 'customer' %}My complaints{% elif current_user.role == 'agent' %}Case queue{% else %}Admin dashboard{% endif %}{% endblock %}
 {% block content %}
-<div class="page-head">
-  <div><span class="eyebrow">{{ current_user.role|title }} view</span><h1>Complaint dashboard</h1></div>
-  <a class="button primary" href="{{ url_for('complaints.new') }}">New complaint</a>
-</div>
-<div class="stat-grid">
-  <div class="stat"><strong>{{ counts.total }}</strong><span>Total</span></div>
-  <div class="stat"><strong>{{ counts.open }}</strong><span>Open</span></div>
-  <div class="stat"><strong>{{ counts.high }}</strong><span>High / critical</span></div>
-  <div class="stat"><strong>{{ counts.pending }}</strong><span>Awaiting review</span></div>
-</div>
+{% if current_user.role == 'customer' %}
+  <div class="page-head customer-head">
+    <div><span class="eyebrow">Customer account</span><h1>My complaints</h1><p>View your submitted cases, current progress and any approved support responses.</p></div>
+    <a class="button primary" href="{{ url_for('complaints.new') }}">Submit complaint</a>
+  </div>
+  <div class="stat-grid customer-stats">
+    <div class="stat"><span>Total cases</span><strong>{{ counts.total }}</strong><small>All complaints you have submitted</small></div>
+    <div class="stat"><span>Open</span><strong>{{ counts.open }}</strong><small>Cases still being handled</small></div>
+    <div class="stat"><span>Responses available</span><strong>{{ counts.responses }}</strong><small>Human-approved replies ready to read</small></div>
+    <div class="stat"><span>Closed</span><strong>{{ counts.closed }}</strong><small>Completed support cases</small></div>
+  </div>
+{% elif current_user.role == 'agent' %}
+  <div class="page-head">
+    <div><span class="eyebrow">Support workspace</span><h1>Case queue</h1><p>Review customer complaints, prepare a clear response and update the case status.</p></div>
+  </div>
+  <div class="stat-grid">
+    <div class="stat"><span>Total cases</span><strong>{{ counts.total }}</strong></div>
+    <div class="stat"><span>Open</span><strong>{{ counts.open }}</strong></div>
+    <div class="stat"><span>Awaiting review</span><strong>{{ counts.pending }}</strong></div>
+    <div class="stat"><span>Closed</span><strong>{{ counts.closed }}</strong></div>
+  </div>
+{% else %}
+  <div class="page-head">
+    <div><span class="eyebrow">Administrator</span><h1>Administration dashboard</h1><p>Operational oversight and access to protected AI/model governance tools.</p></div>
+  </div>
+  <div class="stat-grid">
+    <div class="stat"><span>Total cases</span><strong>{{ counts.total }}</strong></div>
+    <div class="stat"><span>Open</span><strong>{{ counts.open }}</strong></div>
+    <div class="stat"><span>Awaiting review</span><strong>{{ counts.pending }}</strong></div>
+    <div class="stat"><span>High / critical</span><strong>{{ counts.high }}</strong></div>
+  </div>
+  <div class="admin-shortcuts">
+    <a class="shortcut-card" href="{{ url_for('main.analytics') }}"><strong>Complaint analytics</strong><span>Category, sentiment and priority trends</span></a>
+    <a class="shortcut-card" href="{{ url_for('main.model_metrics') }}"><strong>Model metrics</strong><span>Classifier evaluation and performance</span></a>
+    <a class="shortcut-card" href="{{ url_for('system_status.status') }}"><strong>System status</strong><span>AI components and training provenance</span></a>
+    <a class="shortcut-card" href="{{ url_for('admin.audit_log') }}"><strong>Audit trail</strong><span>Governance and administrative actions</span></a>
+  </div>
+{% endif %}
+
+<section class="card filter-panel">
+  <form method="get" class="filter-form">
+    <label><span>Search</span><input type="search" name="q" value="{{ filters.q }}" placeholder="Case reference{% if current_user.is_staff %}, customer{% endif %} or subject"></label>
+    <label><span>Status</span><select name="status">
+      <option value="all" {% if filters.status == 'all' %}selected{% endif %}>All cases</option>
+      <option value="open" {% if filters.status == 'open' %}selected{% endif %}>Open</option>
+      <option value="awaiting_review" {% if filters.status == 'awaiting_review' %}selected{% endif %}>Awaiting review</option>
+      <option value="response_available" {% if filters.status == 'response_available' %}selected{% endif %}>Response available</option>
+      <option value="closed" {% if filters.status == 'closed' %}selected{% endif %}>Closed</option>
+    </select></label>
+    <button class="button" type="submit">Filter</button>
+    {% if filters.q or filters.status != 'all' %}<a class="text-link" href="{{ url_for('main.dashboard') }}">Clear</a>{% endif %}
+  </form>
+</section>
+
 <div class="card table-card">
 <table>
-  <thead><tr><th>Subject</th><th>Category</th><th>Sentiment</th><th>Priority</th><th>AI reply</th><th>Status</th></tr></thead>
+  <thead>
+    {% if current_user.role == 'customer' %}
+      <tr><th>Case</th><th>Subject</th><th>Submitted</th><th>Progress</th><th>Response</th><th></th></tr>
+    {% elif current_user.role == 'agent' %}
+      <tr><th>Case</th><th>Customer</th><th>Subject</th><th>Submitted</th><th>Case status</th><th>Review status</th><th></th></tr>
+    {% else %}
+      <tr><th>Case</th><th>Customer</th><th>Subject</th><th>Category</th><th>Priority</th><th>Status</th><th></th></tr>
+    {% endif %}
+  </thead>
   <tbody>
   {% for c in complaints %}
-    <tr>
-      <td><a href="{{ url_for('complaints.detail', public_id=c.public_id) }}">{{ c.subject }}</a><small>{{ c.created_at.strftime('%d %b %Y %H:%M') }}</small></td>
-      <td>{{ (c.ai_category or '—')|replace('_',' ')|title }}</td>
-      <td>{{ (c.ai_sentiment or '—')|title }}</td>
-      <td><span class="pill {{ c.ai_priority }}">{{ (c.ai_priority or '—')|title }}</span></td>
-      <td>{{ c.reply_status|title }}</td>
-      <td>{{ c.status|title }}</td>
-    </tr>
+    {% if current_user.role == 'customer' %}
+      <tr>
+        <td><span class="case-ref">{{ c.public_id[:8]|upper }}</span></td>
+        <td><strong>{{ c.subject }}</strong></td>
+        <td>{{ c.created_at.strftime('%d %b %Y') }}<small>{{ c.created_at.strftime('%H:%M') }}</small></td>
+        <td>{% if c.status == 'closed' %}<span class="status-badge neutral">Closed</span>{% elif c.reply_status == 'approved' %}<span class="status-badge success">Response ready</span>{% else %}<span class="status-badge warning">Under review</span>{% endif %}</td>
+        <td>{% if c.reply_status == 'approved' %}<span class="status-badge success">Available</span>{% else %}<span class="muted">Not yet available</span>{% endif %}</td>
+        <td><a class="button small" href="{{ url_for('complaints.detail', public_id=c.public_id) }}">View case</a></td>
+      </tr>
+    {% elif current_user.role == 'agent' %}
+      <tr>
+        <td><span class="case-ref">{{ c.public_id[:8]|upper }}</span></td>
+        <td>{{ c.customer.username }}</td>
+        <td><strong>{{ c.subject }}</strong></td>
+        <td>{{ c.created_at.strftime('%d %b %Y %H:%M') }}</td>
+        <td><span class="status-badge {{ 'neutral' if c.status == 'closed' else 'warning' }}">{{ c.status|title }}</span></td>
+        <td><span class="status-badge {{ 'success' if c.reply_status == 'approved' else 'warning' }}">{{ c.reply_status|replace('_',' ')|title }}</span></td>
+        <td><a class="button small" href="{{ url_for('complaints.detail', public_id=c.public_id) }}">Review</a></td>
+      </tr>
+    {% else %}
+      <tr>
+        <td><span class="case-ref">{{ c.public_id[:8]|upper }}</span></td>
+        <td>{{ c.customer.username }}</td>
+        <td><strong>{{ c.subject }}</strong></td>
+        <td>{{ (c.ai_category or '—')|replace('_',' ')|title }}</td>
+        <td><span class="pill {{ c.ai_priority }}">{{ (c.ai_priority or '—')|title }}</span></td>
+        <td>{{ c.status|title }}</td>
+        <td><div class="table-actions"><a class="button small" href="{{ url_for('complaints.detail', public_id=c.public_id) }}">Case</a><a class="button small admin-outline" href="{{ url_for('admin.complaint_analysis', public_id=c.public_id) }}">Intelligence</a></div></td>
+      </tr>
+    {% endif %}
   {% else %}
-    <tr><td colspan="6" class="empty">No complaints yet.</td></tr>
+    <tr><td colspan="7" class="empty">No complaints match this view.</td></tr>
   {% endfor %}
   </tbody>
 </table>

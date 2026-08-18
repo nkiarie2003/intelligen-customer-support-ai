@@ -3,7 +3,7 @@ from flask_login import login_required
 
 from .extensions import db
 from .forms import KnowledgeForm
-from .models import AuditLog, KnowledgeDocument, User
+from .models import AuditLog, Complaint, KnowledgeDocument, User
 from .utils import admin_required, audit
 
 bp = Blueprint("admin", __name__, url_prefix="/admin-tools")
@@ -54,3 +54,11 @@ def users():
 def audit_log():
     logs = AuditLog.query.order_by(AuditLog.created_at.desc()).limit(200).all()
     return render_template("admin/audit.html", logs=logs)
+
+
+@bp.route("/complaints/<public_id>/analysis")
+@login_required
+@admin_required
+def complaint_analysis(public_id):
+    complaint = Complaint.query.filter_by(public_id=public_id).first_or_404()
+    return render_template("admin/complaint_analysis.html", complaint=complaint)

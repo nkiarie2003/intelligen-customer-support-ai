@@ -65,3 +65,27 @@ This architecture intentionally avoids requiring Azure ML `onlineEndpoints` or A
 ## Why the hybrid design is academically useful
 
 The project demonstrates a measurable classical baseline, modern transformer enhancements, explainability, retrieval-augmented generation, prompt constraints, human oversight, cloud compute, data governance and reproducibility in one integrated system.
+## Role-based access control
+
+```text
+Customer
+  ├─ Dashboard
+  ├─ New complaint
+  └─ Own complaint details
+
+Support Agent
+  ├─ Operational dashboard
+  ├─ Complaint review
+  └─ Analytics
+
+Administrator
+  ├─ All staff capabilities
+  ├─ Model metrics
+  ├─ System/model status and training provenance
+  ├─ User list
+  ├─ RAG knowledge management
+  └─ Audit log
+```
+
+`Model metrics` and `System status` are enforced with an administrator-only route decorator, so non-admin users cannot reach them by typing the URLs directly.
+

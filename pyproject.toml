@@ -1,5 +1,5 @@
 [project]
-name = "intelligen-customer-intelligence-group2"
+name = "customer-intelligence-platform-shu-customer-group2"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
@@ -29,3 +29,4 @@ dependencies = [
     "pathlib>=1.0.1",
     "argparse>=1.4.0",
 ]
+
