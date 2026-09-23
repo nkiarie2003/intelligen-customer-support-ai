@@ -327,3 +327,5 @@ The current SHU build deliberately separates customer support information from A
 - **Administrator:** access complaint intelligence, analytics, model metrics, system status, users, RAG knowledge and audit records.
 
 The administrator-only complaint intelligence route contains classification confidence, sentiment score, priority rationale, XAI cues, RAG evidence and backend diagnostics. Customers and agents receive HTTP 403 if they attempt to open that route directly.
+
+Contibutors: Nelson Kiarie
